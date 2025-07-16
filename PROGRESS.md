@@ -5,6 +5,8 @@
 - Added `README.md`, `TASKS.md`, and `PROGRESS.md` files
 - Pushed all files to GitHub repository
 - Set up the Next.js project and ran the dev server successfully
+- Set Up supabase
+- Create UI components
 
 **🔜 Next Steps:**
 - Configure authentication (sign up / login)
