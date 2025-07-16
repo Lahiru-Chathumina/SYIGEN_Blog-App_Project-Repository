@@ -4,10 +4,10 @@
 - Created public GitHub repository
 - Added `README.md`, `TASKS.md`, and `PROGRESS.md` files
 - Pushed all files to GitHub repository
+- Set up the Next.js project and ran the dev server successfully
 
 **🔜 Next Steps:**
-- Initialize Next.js app and test homepage
-- Set up Supabase and connect to the app
+- Configure authentication (sign up / login)
 
 **❗ Challenges:**
 - No major issues today
