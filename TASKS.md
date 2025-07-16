@@ -1,4 +1,5 @@
- Learn Next.js basics                    | ✅ Completed 
- Create GitHub repo & initial files      | ✅ Completed 
- Set up Next.js project                  | ✅ Completed 
- 
+# ✅ Completed Tasks
+
+-  Learn Next.js basics  
+-  Create GitHub repo & initial files  
+-  Set up Next.js project  
