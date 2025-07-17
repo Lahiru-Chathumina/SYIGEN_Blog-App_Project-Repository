@@ -9,10 +9,21 @@ export default function HomePage() {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold">Welcome to the Blog App</h1>
-      <p className="mt-2 text-gray-700">This is the homepage.</p>
-      <PostCard post={post} />
-    </div>
+    <main className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 p-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-10">
+        <header className="mb-8 text-center">
+          <h1 className="text-5xl font-extrabold text-indigo-700 tracking-wide">
+            Welcome to the Blog App
+          </h1>
+          <p className="mt-3 text-lg text-indigo-600/80">
+            This is the homepage.
+          </p>
+        </header>
+
+        <section>
+          <PostCard post={post} />
+        </section>
+      </div>
+    </main>
   );
 }
