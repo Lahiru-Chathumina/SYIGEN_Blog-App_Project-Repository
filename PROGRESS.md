@@ -31,9 +31,6 @@
 **❗ Challenges:**
 - Faced an issue with uploading images to Supabase Storage (post image not saving as expected)
 
-
-📌 Status: ✅ On Track
-
 ### Day 3: 07/18/2025
 ✅ Completed:
 
