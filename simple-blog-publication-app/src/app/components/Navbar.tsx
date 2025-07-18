@@ -5,6 +5,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { Menu, X } from 'lucide-react'
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -35,13 +38,42 @@ export default function Navbar() {
     router.push('/login')
   }
 
-  const handlePayment = async () => {
-    if (!userEmail) {
-      router.push('/login')
-    } else {
-      router.push('/checkout')
+const handlePayment = async () => {
+  if (!userEmail) {
+    router.push('/login')
+  } else {
+    try {
+      const stripe = await stripePromise
+      if (!stripe) {
+        alert('Stripe failed to load')
+        return
+      }
+
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        alert(`Error: ${errorData.error}`)
+        return
+      }
+
+      const { sessionId } = await res.json()
+
+      const { error } = await stripe.redirectToCheckout({ sessionId })
+
+      if (error) {
+        alert(error.message)
+      }
+    } catch (error: any) {
+      alert(error.message || 'Payment failed')
     }
   }
+}
+
 
   return (
     <nav className="bg-blue-800 shadow px-4 py-3 flex items-center justify-between md:px-8">

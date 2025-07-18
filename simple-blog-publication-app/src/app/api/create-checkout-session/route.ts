@@ -5,6 +5,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2022-11-15',
 });
 
+
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
             product_data: {
               name: 'Premium Subscription',
             },
-            unit_amount: 500, // $5.00
+            unit_amount: 500,
           },
           quantity: 1,
         },
