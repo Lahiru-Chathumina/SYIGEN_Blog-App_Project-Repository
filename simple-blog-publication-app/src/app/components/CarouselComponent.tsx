@@ -3,7 +3,7 @@
 import 'flowbite';
 
 export default function CarouselComponent() {
-  const slides = [1, 2, 3, 4, 5]; 
+  const slides = [1, 2, 3]; 
   return (
     <div id="default-carousel" className="relative w-full max-w-6xl mx-auto mb-12" data-carousel="slide">
       <div className="relative h-56 overflow-hidden rounded-xl md:h-96">
@@ -14,7 +14,7 @@ export default function CarouselComponent() {
             data-carousel-item={index === 0 ? 'active' : ''}
           >
             <img
-              src={`/carousel-${n}.svg`} 
+              src={`/slider/carousel-${n}.jpg`} 
               className="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 object-cover"
               alt={`Slide ${n}`}
             />

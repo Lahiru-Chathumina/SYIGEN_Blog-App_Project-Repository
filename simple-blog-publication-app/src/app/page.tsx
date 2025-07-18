@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabaseClient';
 import PostCard from './components/PostCard';
 import CarouselComponent from './components/CarouselComponent';
+import Footer from './components/Footer';
 
 export default function HomePage() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -70,6 +71,8 @@ export default function HomePage() {
           )}
         </section>
       </div>
+            <Footer />
+
     </main>
   );
 }
