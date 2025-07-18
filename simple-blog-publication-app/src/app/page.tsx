@@ -32,7 +32,6 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute top-10 left-10 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full blur-3xl animate-pulse-slow"></div>
         <div className="absolute bottom-20 right-10 w-24 h-24 sm:w-36 sm:h-36 lg:w-48 lg:h-48 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
@@ -41,7 +40,6 @@ export default function HomePage() {
 
       <div className="relative z-10 py-4 sm:py-6 lg:py-8 px-3 sm:px-4 lg:px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Hero Header */}
           <motion.header 
             className="mb-8 sm:mb-12 lg:mb-16 text-center"
             initial={{ opacity: 0, y: -30 }}
@@ -71,7 +69,6 @@ export default function HomePage() {
               Discover amazing stories, share your thoughts, and connect with a vibrant community of writers and readers.
             </motion.p>
 
-            {/* Feature Pills */}
             <motion.div 
               className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 px-4"
               initial={{ opacity: 0, y: 20 }}
@@ -96,7 +93,6 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* Carousel Component */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -106,7 +102,6 @@ export default function HomePage() {
               <CarouselComponent />
             </motion.div>
 
-            {/* Decorative Elements */}
             <motion.div 
               className="flex items-center justify-center space-x-2"
               initial={{ opacity: 0 }}
@@ -119,7 +114,6 @@ export default function HomePage() {
             </motion.div>
           </motion.header>
 
-          {/* Posts Section */}
           <motion.section
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -171,10 +165,8 @@ export default function HomePage() {
         </div>
       </div>
       
-      {/* Footer */}
       <Footer />
 
-      {/* Floating Decorative Elements */}
       <motion.div
         className="absolute top-20 right-4 sm:right-8 lg:right-20 w-3 h-3 sm:w-4 sm:h-4 bg-purple-400 rounded-full opacity-60 pointer-events-none"
         animate={{
