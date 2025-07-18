@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 export default function FomeCreate() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function FomeCreate() {
   }, [router]);
 
   const handlePost = async () => {
-    if (!description || !imageFile) {
+    if (!title || !description || !imageFile) {
       setError('Please fill all fields');
       return;
     }
@@ -58,6 +59,8 @@ export default function FomeCreate() {
     const { error: dbError } = await supabase.from('posts').insert([
       {
         user_id: user.id,
+        user_email: user.email,
+        title,
         description,
         image_url: imageUrl,
       },
@@ -76,18 +79,29 @@ export default function FomeCreate() {
     <div className="max-w-xl mx-auto mt-10 p-4 border rounded">
       <h2 className="text-2xl font-bold mb-4">Create Post</h2>
       {error && <div className="text-red-500 mb-2">{error}</div>}
+
+      <input
+        type="text"
+        placeholder="Enter title..."
+        className="w-full p-2 border mb-4"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+
       <textarea
         placeholder="Write something..."
         className="w-full p-2 border mb-4"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+
       <input
         type="file"
         accept="image/*"
         onChange={(e) => setImageFile(e.target.files?.[0] || null)}
         className="mb-4"
       />
+
       <button
         onClick={handlePost}
         className="bg-blue-500 text-white px-4 py-2 rounded"
