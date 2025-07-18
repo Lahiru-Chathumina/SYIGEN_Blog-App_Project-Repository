@@ -3,145 +3,98 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function FomeCreate() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data?.user) router.push('/login');
-      else setUser(data.user);
-    });
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      } else {
+        router.push('/login');
+      }
+    };
+    getUser();
   }, [router]);
 
-  useEffect(() => {
-    if (!imageFile) {
-      setImagePreview(null);
+  const handlePost = async () => {
+    if (!description || !imageFile) {
+      setError('Please fill all fields');
       return;
     }
-    const url = URL.createObjectURL(imageFile);
-    setImagePreview(url);
 
-    return () => URL.revokeObjectURL(url);
-  }, [imageFile]);
-
-  const handlePost = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
     setLoading(true);
+    setError('');
 
-    if (!imageFile) {
-      setError('Image is required');
+    const fileName = `${uuidv4()}-${imageFile.name}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('postimage')
+      .upload(`images/${fileName}`, imageFile, {
+        contentType: imageFile.type,
+      });
+
+    if (uploadError) {
+      setError('Error uploading image: ' + uploadError.message);
       setLoading(false);
       return;
     }
 
-    try {
-      const fileExt = imageFile.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+    const { data: urlData } = supabase
+      .storage
+      .from('postimage')
+      .getPublicUrl(`images/${fileName}`);
 
-      const { error: uploadError } = await supabase.storage
-        .from('postimage')
-        .upload(fileName, imageFile);
+    const imageUrl = urlData.publicUrl;
 
-      if (uploadError) throw new Error('Image upload failed: ' + uploadError.message);
+    const { error: dbError } = await supabase.from('posts').insert([
+      {
+        user_id: user.id,
+        description,
+        image_url: imageUrl,
+      },
+    ]);
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('postimage')
-        .getPublicUrl(fileName);
-
-      const { error: insertError } = await supabase
-        .from('posts')
-        .insert({
-          user_id: user.id,
-          description,
-          image_url: publicUrl,
-        });
-
-      if (insertError) throw new Error('Failed to create post: ' + insertError.message);
-
-      setDescription('');
-      setImageFile(null);
-      setError('');
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
-    } finally {
-      setLoading(false);
+    if (dbError) {
+      setError('Error saving post: ' + dbError.message);
+    } else {
+      router.push('/');
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300 px-4 py-12">
-      <form
-        onSubmit={handlePost}
-        className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6"
+    <div className="max-w-xl mx-auto mt-10 p-4 border rounded">
+      <h2 className="text-2xl font-bold mb-4">Create Post</h2>
+      {error && <div className="text-red-500 mb-2">{error}</div>}
+      <textarea
+        placeholder="Write something..."
+        className="w-full p-2 border mb-4"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+        className="mb-4"
+      />
+      <button
+        onClick={handlePost}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        disabled={loading}
       >
-        <h2 className="text-3xl font-semibold text-center text-gray-800">
-          Create a Post
-        </h2>
-
-        {error && (
-          <p className="text-red-600 bg-red-100 p-3 rounded text-center font-medium">
-            {error}
-          </p>
-        )}
-
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Write a description..."
-          required
-          rows={4}
-          className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
-
-        <div>
-          <label
-            htmlFor="imageUpload"
-            className="block mb-2 font-medium text-gray-700 cursor-pointer"
-          >
-            Upload an image <span className="text-gray-400">(required)</span>
-          </label>
-          <input
-            id="imageUpload"
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-            required
-            className="block w-full text-gray-700 file:border file:border-gray-300 file:rounded file:px-3 file:py-2 file:text-sm file:cursor-pointer file:bg-white file:hover:bg-blue-50 transition"
-          />
-        </div>
-
-        {imagePreview && (
-          <div className="mt-4">
-            <p className="mb-2 text-gray-600 font-medium">Image Preview:</p>
-            <img
-              src={imagePreview}
-              alt="Selected image preview"
-              className="w-full rounded-lg shadow-sm object-cover max-h-64"
-            />
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-3 rounded-xl text-white font-semibold transition ${
-            loading
-              ? 'bg-blue-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700'
-          }`}
-        >
-          {loading ? 'Posting...' : 'Post'}
-        </button>
-      </form>
+        {loading ? 'Posting...' : 'Post'}
+      </button>
     </div>
   );
 }
