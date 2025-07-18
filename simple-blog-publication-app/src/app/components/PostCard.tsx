@@ -11,19 +11,75 @@ export default function PostCard({ post }: any) {
 
   return (
     <Link href={`/post/${post.id}`} className="block">
-      <div className="border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-lg transition-shadow bg-white cursor-pointer">
-        <h3 className="text-2xl font-semibold mb-3 text-gray-900">{post.title || 'Untitled Post'}</h3>
-        <p className="text-sm text-gray-500 mb-3">Uploaded by: {post.user_email || 'Unknown User'}</p>
-        <p className="text-gray-700 mb-4">{preview}</p>
+      <article className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200/60 hover:border-indigo-200 hover:-translate-y-1 cursor-pointer">
         {post.image_url && (
-          <img
-            src={post.image_url}
-            alt={post.title || 'Post image'}
-            className="rounded-md w-full max-h-64 object-cover"
-            loading="lazy"
-          />
+          <div className="relative overflow-hidden">
+            <img
+              src={post.image_url}
+              alt={post.title || 'Post image'}
+              className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
         )}
-      </div>
+
+        <div className="p-6">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-semibold">
+                {(post.user_email || 'U').charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-700">
+                {post.user_email || 'Unknown User'}
+              </p>
+              <p className="text-xs text-slate-500">
+                {post.created_at
+                  ? new Date(post.created_at).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : 'Unknown Date'}
+              </p>
+            </div>
+          </div>
+
+          <h3 className="text-xl font-bold mb-3 text-slate-900 group-hover:text-indigo-700 transition-colors line-clamp-2">
+            {post.title || 'Untitled Post'}
+          </h3>
+
+          <p className="text-slate-600 leading-relaxed line-clamp-3 mb-4">
+            {preview}
+          </p>
+
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center text-sm font-medium text-indigo-600 group-hover:text-indigo-700">
+              Read more
+              <svg
+                className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </span>
+            <div className="flex items-center space-x-1">
+              <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </article>
     </Link>
   );
 }
