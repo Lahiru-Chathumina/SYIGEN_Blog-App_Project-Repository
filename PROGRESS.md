@@ -33,3 +33,14 @@
 
 
 📌 Status: ✅ On Track
+
+### Day 3: 07/18/2025
+✅ Completed:
+
+- Create To All Task
+
+🔜 Next Steps:
+
+
+**❗ Challenges:**
+-There are issues with 404 error pages and bugs in the payment component
