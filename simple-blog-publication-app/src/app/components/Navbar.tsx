@@ -4,26 +4,23 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
+      const { data: { user } } = await supabase.auth.getUser()
       setUserEmail(user?.email ?? null)
     }
 
     fetchUser()
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserEmail(session?.user?.email ?? null)
     })
 
@@ -38,59 +35,126 @@ export default function Navbar() {
     router.push('/login')
   }
 
+  const handlePayment = async () => {
+    if (!userEmail) {
+      router.push('/login')
+    } else {
+      router.push('/checkout')
+    }
+  }
+
   return (
-    <nav className="bg-white shadow p-4 flex justify-between items-center">
-      <Link href="/" className="text-xl font-bold text-blue-600">
+    <nav className="bg-blue-800 shadow px-4 py-3 flex items-center justify-between md:px-8">
+      <Link href="/" className="text-xl font-bold text-white">
         Blog App
       </Link>
 
-      <div className="space-x-4 flex items-center">
-        <Link
-          href="/"
-          className={pathname === '/' ? 'text-blue-600 font-semibold' : 'text-gray-700'}
-        >
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="md:hidden text-white focus:outline-none"
+      >
+        {menuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+
+      <div className="hidden md:flex items-center space-x-4">
+        <Link href="/" className={pathname === '/' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
           Home
         </Link>
 
-        <Link
-          href="/pricing"
+        <button
+          onClick={handlePayment}
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full shadow-md transition"
         >
-          Pricing
-        </Link>
+          Payment
+        </button>
+
+        {userEmail && (
+          <Link
+            href="/fomecreate"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition"
+          >
+            + Add Post
+          </Link>
+        )}
 
         {userEmail ? (
           <>
-            <span className="text-sm text-gray-700">
-               <span className="font-medium">{userEmail}</span>
+            <span className="text-sm text-gray-200">
+              <span className="font-medium">{userEmail}</span>
             </span>
             <button
-              type="button"
-              aria-label="Logout"
               onClick={handleLogout}
-              className="text-red-500 hover:text-red-700 text-sm ml-2 underline"
+              className="text-red-400 hover:text-red-600 text-sm ml-2 underline"
             >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link
-              href="/login"
-              className={pathname === '/login' ? 'text-blue-600 font-semibold' : 'text-gray-700'}
-            >
+            <Link href="/login" className={pathname === '/login' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
               Login
             </Link>
-            <Link
-              href="/register"
-              className={pathname === '/register' ? 'text-blue-600 font-semibold' : 'text-gray-700'}
-            >
+            <Link href="/register" className={pathname === '/register' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
               Register
             </Link>
-            <span className="text-sm text-gray-400">Not logged in</span>
           </>
         )}
       </div>
+
+      {menuOpen && (
+        <div className="absolute top-16 left-0 w-full bg-blue-900 shadow-md p-4 flex flex-col space-y-4 md:hidden z-50">
+          <Link href="/" onClick={() => setMenuOpen(false)} className={pathname === '/' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
+            Home
+          </Link>
+
+          <button
+            onClick={() => {
+              setMenuOpen(false)
+              handlePayment()
+            }}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-full shadow-md transition text-sm"
+          >
+            Payment
+          </button>
+
+          {userEmail && (
+            <Link
+              href="/fomecreate"
+              onClick={() => setMenuOpen(false)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg shadow transition text-sm"
+            >
+              + Add Post
+            </Link>
+          )}
+
+          {userEmail ? (
+            <>
+              <span className="text-sm text-gray-200">
+                <span className="font-medium">{userEmail}</span>
+              </span>
+              <button
+                onClick={() => {
+                  setMenuOpen(false)
+                  handleLogout()
+                }}
+                className="text-red-400 hover:text-red-600 text-sm underline"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setMenuOpen(false)} className={pathname === '/login' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
+                Login
+              </Link>
+              <Link href="/register" onClick={() => setMenuOpen(false)} className={pathname === '/register' ? 'text-indigo-300 font-semibold' : 'text-gray-300'}>
+                Register
+              </Link>
+              <span className="text-sm text-gray-400">Not logged in</span>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   )
 }
